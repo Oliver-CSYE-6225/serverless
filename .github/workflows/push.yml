@@ -21,8 +21,8 @@ jobs:
       - name: Create Lambda deployment artifact
         run:  |
               sudo mkdir codedeploy_artifact
-              zip ${{ARTIFACT_NAME}} myDateTimeFunction.js beforeAllowTraffic.js afterAllowTraffic.js appspec.yml
-              sudo mv ${{ARTIFACT_NAME}}.zip ./codedeploy_artifact
+              zip ${{env.ARTIFACT_NAME}} myDateTimeFunction.js beforeAllowTraffic.js afterAllowTraffic.js appspec.yml
+              sudo mv ${{env.ARTIFACT_NAME}}.zip ./codedeploy_artifact
 
       - name: Configure AWS Credentials
         run:  |
