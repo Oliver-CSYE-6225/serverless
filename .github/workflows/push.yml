@@ -1,0 +1,29 @@
+name: Build and Deploy Artifact
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      ARTIFACT_NAME: webapp_v1
+      CODE_DEPLOY_APPLICATION_NAME: csye6225-webapp
+      CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME: csye6225-webapp-deployment
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        run:  |
+          aws --version
+          aws configure set aws_access_key_id ${{secrets.AWS_ACCESS_KEY}}
+          aws configure set aws_secret_access_key ${{secrets.AWS_SECRET}}
+          aws configure set default.region ${{env.AWS_REGION}}
+
+      - name: CodeDeploy API Call
+        run: sam package --template-file template.yml --output-template-file package.yml --s3-bucket ${{secrets.codedeploy_bucket_name}}
