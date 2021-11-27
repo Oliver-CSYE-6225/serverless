@@ -1,33 +1,52 @@
-// resource "aws_iam_policy" "CodeDeploy-EC2-S3" {
-//   name        = var.ec2_codedeploy_policy_name
-//   description = var.ec2_codedeploy_policy_name_description
+resource "aws_iam_policy" "CodeDeploy-EC2-S3" {
+  name        = var.ec2_codedeploy_policy_name
+  description = var.ec2_codedeploy_policy_name_description
 
 
-//   policy = jsonencode({
-//     "Version" : "2012-10-17",
-//     "Statement" : [
-//       {
-//         "Action" : [
-//           "s3:Get*",
-//           "s3:List*"
-//         ],
-//         "Effect" : "Allow",
-//         "Resource" : [
-//           var.artifact_s3_arn,
-//           format("%s%s", var.artifact_s3_arn, "/*")
-//         ]
-//     }]
-//   })
-// }
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Action" : [
+          "s3:Get*",
+          "s3:List*"
+        ],
+        "Effect" : "Allow",
+        "Resource" : [
+          var.artifact_s3_arn,
+          format("%s%s", var.artifact_s3_arn, "/*")
+        ]
+    }]
+  })
+}
 
 // data "aws_iam_role" "s3_access" {
 //   name = "EC2-CSYE6225"
 // }
 
-// resource "aws_iam_role_policy_attachment" "attach_ec2-s3" {
-//   role       = data.aws_iam_role.s3_access.name
-//   policy_arn = aws_iam_policy.CodeDeploy-EC2-S3.arn
+// resource "aws_iam_role" "lambda_service_role" {
+//   name = "lambda-service-role"
+
+//   assume_role_policy = <<EOF
+// {
+//   "Version": "2012-10-17",
+//   "Statement": [
+//     {
+//       "Sid": "",
+//       "Effect": "Allow",
+//       "Principal": {
+//         "Service": [
+//           "lambda.amazonaws.com"
+//         ]
+//       },
+//       "Action": "sts:AssumeRole"
+//     }
+//   ]
 // }
+// EOF
+// }
+
+
 
 
 //Policy that provides permissions to upload artifact to S3
@@ -95,7 +114,7 @@ resource "aws_iam_policy" "GH-Code-Deploy" {
         "Resource" : [
           "arn:aws:codedeploy:${var.aws_region}:${var.aws_account_id}:deploymentconfig:CodeDeployDefault.OneAtATime",
           "arn:aws:codedeploy:${var.aws_region}:${var.aws_account_id}:deploymentconfig:CodeDeployDefault.HalfAtATime",
-          "arn:aws:codedeploy:${var.aws_region}:${var.aws_account_id}:deploymentconfig:CodeDeployDefault.AllAtOnce"
+          "arn:aws:codedeploy:${var.aws_region}:${var.aws_account_id}:deploymentconfig:CodeDeployDefault.LambdaAllAtOnce"
         ]
       }
     ]
@@ -115,6 +134,8 @@ resource "aws_iam_policy_attachment" "attach-code-deploy" {
   users      = ["ghactions-serverless"]
   policy_arn = aws_iam_policy.GH-Code-Deploy.arn
 }
+
+
 
 // resource "aws_iam_role" "gh_actions_role" {
 //   depends_on          = [aws_iam_policy.GH-Upload-To-S3, aws_iam_policy.GH-Code-Deploy]
@@ -165,6 +186,11 @@ resource "aws_iam_role_policy_attachment" "codedeploy_service_policy_attach" {
 resource "aws_iam_role_policy_attachment" "codedeploy_lambda_policy_attach" {
   role       =  aws_iam_role.codedeploy_service_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForLambda"
+}
+
+resource "aws_iam_role_policy_attachment" "attach_ec2-s3" {
+  role       = aws_iam_role.codedeploy_service_role.name
+  policy_arn = aws_iam_policy.CodeDeploy-EC2-S3.arn
 }
 
 

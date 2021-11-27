@@ -24,6 +24,7 @@ jobs:
               sudo mkdir codedeploy_artifact
               zip ${{env.ARTIFACT_NAME}} myDateTimeFunction.js beforeAllowTraffic.js afterAllowTraffic.js appspec.yml
               sudo mv ${{env.ARTIFACT_NAME}}.zip ./codedeploy_artifact
+              ls ./codedeploy_artifact/appspec.yaml
 
       - name: Configure AWS Credentials
         run:  |
@@ -41,7 +42,7 @@ jobs:
       #   run: sam deploy --template-file package.yml --stack-name my-date-time-app --capabilities CAPABILITY_IAM
       - name: CodeDeploy API Call
         run: |
-              output=$(aws deploy create-deployment --application-name ${{env.CODE_DEPLOY_APPLICATION_NAME}} --deployment-config-name ${{env.CODEDEPLOY_DEPLOYMENT_CONFIG_NAME}} --deployment-group-name ${{env.CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME}} --description "CSYE6225 - Deploy Lambda Function" --s3-location bucket=${{secrets.AWS_S3_ARTIFACT_BUCKET_NAME}},key="${{env.ARTIFACT_NAME}}.zip",bundleType=zip --region ${{env.AWS_REGION}} --output json)
+              output=$(aws deploy create-deployment --application-name ${{env.CODE_DEPLOY_APPLICATION_NAME}} --deployment-config-name ${{env.CODEDEPLOY_DEPLOYMENT_CONFIG_NAME}} --deployment-group-name ${{env.CODEDEPLOY_APPLICATION_DEPLOYMENT_GROUP_NAME}} --description "CSYE6225 - Deploy Lambda Function" --s3-location bucket=${{secrets.AWS_S3_ARTIFACT_BUCKET_NAME}},key="${{env.ARTIFACT_NAME}}.zip", bundleType=zip --region ${{env.AWS_REGION}} --output json)
               echo $output
               dID=$(echo $output | jq -r '.deploymentId')
               aws deploy wait deployment-successful --deployment-id $dID
