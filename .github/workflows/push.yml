@@ -19,12 +19,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       
-      - name: Create Lambda deployment artifact
-        run:  |
-              sudo mkdir codedeploy_artifact
-              zip ${{env.ARTIFACT_NAME}} myDateTimeFunction.js beforeAllowTraffic.js afterAllowTraffic.js appspec.yaml
-              sudo mv ${{env.ARTIFACT_NAME}}.zip ./codedeploy_artifact
-              sudo ls ./codedeploy_artifact/appspec.yaml
+      # - name: Create Lambda deployment artifact
+      #   run:  |
+      #         sudo mkdir codedeploy_artifact
+      #         zip ${{env.ARTIFACT_NAME}} myDateTimeFunction.js beforeAllowTraffic.js afterAllowTraffic.js appspec.yaml
+      #         sudo mv ${{env.ARTIFACT_NAME}}.zip ./codedeploy_artifact
+      #         sudo ls ./codedeploy_artifact/appspec.yaml
 
       - name: Configure AWS Credentials
         run:  |
@@ -33,9 +33,9 @@ jobs:
           aws configure set aws_secret_access_key ${{secrets.AWS_SECRET}}
           aws configure set default.region ${{env.AWS_REGION}}
 
-      - name: Upload artifact to s3
-        run: aws s3 sync ./codedeploy_artifact s3://${{secrets.AWS_S3_ARTIFACT_BUCKET_NAME}}
-        
+      # - name: Upload artifact to s3
+      #   run: aws s3 sync ./codedeploy_artifact s3://${{secrets.AWS_S3_ARTIFACT_BUCKET_NAME}}
+
       - name: CodeDeploy API Call
         run: sam package --template-file template.yml --output-template-file package.yml --s3-bucket ${{secrets.codedeploy_bucket_name}}
 
