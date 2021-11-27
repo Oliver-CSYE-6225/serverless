@@ -8,7 +8,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: myDateTimeFunction.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs14.x
 # Instructs your myDateTimeFunction is published to an alias named "live".      
       AutoPublishAlias: live
 # Grants this function permission to call lambda:InvokeFunction
