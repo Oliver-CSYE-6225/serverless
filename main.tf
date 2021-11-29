@@ -27,7 +27,7 @@ resource "aws_lambda_function" "test-lambda" {
   filename      = "myDateTimeFunction.zip"
   function_name = "myDateTimeFunction"
   role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "myDateTimeFunction.js"
+  handler       = "myDateTimeFunction"
 
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
