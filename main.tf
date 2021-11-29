@@ -166,6 +166,32 @@ resource "aws_iam_policy" "GH-Upload-To-S3" {
   })
 }
 
+resource "aws_iam_policy" "GH-Lambda" {
+  name        = "GH-Lambda"
+  description = "GH-Lambda"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    "Version" = "2012-10-17",
+    "Statement" = [
+      {
+        "Effect" = "Allow",
+        "Action" = [
+                "lambda:UpdateFunctionCode",
+                "lambda:UpdateFunctionConfiguration"
+        ],
+        "Resource" = "arn:aws:lambda:us-east-1:546679085257:function:myDateTimeFunction"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "attach-GH-lambda" {
+  name       = "test-attachment"
+  users      = ["ghactions-serverless"]
+  policy_arn = aws_iam_policy.GH-Lambda.arn
+}
 
 
 resource "aws_iam_policy" "GH-Code-Deploy" {
