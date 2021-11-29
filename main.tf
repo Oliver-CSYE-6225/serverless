@@ -179,7 +179,8 @@ resource "aws_iam_policy" "GH-Lambda" {
         "Effect" = "Allow",
         "Action" = [
                 "lambda:UpdateFunctionCode",
-                "lambda:UpdateFunctionConfiguration"
+                "lambda:UpdateFunctionConfiguration",
+                "lambda:PublishVersion"
         ],
         "Resource" = "arn:aws:lambda:us-east-1:546679085257:function:myDateTimeFunction"
       }

@@ -5,5 +5,22 @@ exports.handler = function(event, context, callback) {
   var data = {
       "greetings": "Hellos, " + event.firstName + " " + event.lastName + "."
   };
-  callback(null, data);
+
+  // callback(null, data);
+
+  var params = {
+    Destination: {
+      ToAddresses: ["oliverrodrigues996@gmail.com"],
+    },
+    Message: {
+      Body: {
+        Text: { Data: "Test Oliver" },
+      },
+
+      Subject: { Data: "Test Email Oliver" },
+    },
+    Source: "oliver.r@prod.oliverrodrigues.me",
+  };
+ 
+  return ses.sendEmail(params).promise()
 }
