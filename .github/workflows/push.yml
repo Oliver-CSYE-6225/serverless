@@ -24,7 +24,6 @@ jobs:
               sudo mkdir codedeploy_artifact
               zip ${{env.ARTIFACT_NAME}} myDateTimeFunction.js beforeAllowTraffic.js afterAllowTraffic.js
               sudo mv ${{env.ARTIFACT_NAME}}.zip ./codedeploy_artifact
-              sudo ls ./codedeploy_artifact/appspec.yaml
 
       - name: Configure AWS Credentials
         run:  |
