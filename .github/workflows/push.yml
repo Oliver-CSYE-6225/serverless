@@ -41,7 +41,7 @@ jobs:
       - name: Update Lambda Function
         run: |
           aws lambda update-function-code --function-name myDateTimeFunction --s3-bucket ${{secrets.AWS_S3_ARTIFACT_BUCKET_NAME}} --s3-key ${{env.ARTIFACT_NAME}}.zip --region us-east-1 > lambdaFile.txt
-          aws lambda publish-version --function-name myDateTimeFunction
+          # aws lambda publish-version --function-name myDateTimeFunction
         # - name: Deploy lambda
       #   run: sam deploy --template-file package.yml --stack-name my-date-time-app --capabilities CAPABILITY_IAM
       # - name: CodeDeploy API Call
