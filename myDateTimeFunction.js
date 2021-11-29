@@ -1,5 +1,6 @@
 'use strict';
-    
+var aws = require("aws-sdk");
+var ses = new aws.SES({ region: "us-east-1" });
 exports.handler = function(event, context, callback) {
   console.log("Received event: ", event);
   var data = {
