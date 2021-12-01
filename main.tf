@@ -101,8 +101,8 @@ resource "aws_iam_policy" "Lambda-Artifact-S3" {
         ],
         "Effect" : "Allow",
         "Resource" : [
-          var.artifact_s3_arn,
-          format("%s%s", var.artifact_s3_arn, "/*")
+          aws_s3_bucket.lambda_bucket.arn,
+          format("%s%s", aws_s3_bucket.lambda_bucket.arn, "/*")
         ]
     }]
   })
@@ -317,7 +317,35 @@ resource "aws_iam_policy_attachment" "attach-code-deploy" {
   policy_arn = aws_iam_policy.GH-Code-Deploy.arn
 }
 
+  resource "random_string" "prefix_lambda" {
+  upper   = false
+  lower   = true
+  special = false
+  length  = 5
+}
 
+resource "aws_s3_bucket" "lambda_bucket" {
+  // depends_on = [aws_kms_key.kms_encryption_key]
+
+  bucket        = format("%s%s%s", random_string.prefix_lambda.result, ".", "lambda.prod.oliverrodrigues.me")
+  acl           = "private"
+  force_destroy = true
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+
+  lifecycle_rule {
+    enabled = true
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+  }
+}
 
 // // resource "aws_iam_role" "gh_actions_role" {
 // //   depends_on          = [aws_iam_policy.GH-Upload-To-S3, aws_iam_policy.GH-Code-Deploy]
