@@ -16,9 +16,9 @@ exports.handler = (event, context, callback) => {
         if(!err){
             let alive = true;
             if (resp.Item != null || resp.Item != undefined) {
-                if (resp.Item.TimeToExist < new Date.now()) {
+                if (resp.Item.TimeToExist < +new Date()) {
                     console.log(resp.Item.TimeToExist);
-                    console.log(new Date.now());
+                    console.log(+new Date());
                     alive = false;
                 }
             } 
@@ -29,7 +29,7 @@ exports.handler = (event, context, callback) => {
             // }
             console.log("alive:", alive);
             if(alive){
-                let currentTime = Date.now();
+                let currentTime = +new Date();
                 let ttl = 5 * 60 * 1000;
                 let expiry = currentTime + ttl;
                 let params = {
