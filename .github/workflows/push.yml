@@ -22,7 +22,7 @@ jobs:
       - name: Create Lambda deployment artifact
         run:  |
               sudo mkdir codedeploy_artifact
-              zip ${{env.ARTIFACT_NAME}} myDateTimeFunction.js
+              zip ${{env.ARTIFACT_NAME}} userVerification.js
               sudo mv ${{env.ARTIFACT_NAME}}.zip ./codedeploy_artifact
 
       - name: Configure AWS Credentials
@@ -37,4 +37,4 @@ jobs:
 
       - name: Update Lambda Function
         run: |
-          aws lambda update-function-code --function-name myDateTimeFunction --s3-bucket ${{secrets.AWS_S3_ARTIFACT_BUCKET_NAME}} --s3-key ${{env.ARTIFACT_NAME}}.zip --region us-east-1 > lambdaFile.txt
+          aws lambda update-function-code --function-name userVerification --s3-bucket ${{secrets.AWS_S3_ARTIFACT_BUCKET_NAME}} --s3-key ${{env.ARTIFACT_NAME}}.zip --region us-east-1 > lambdaFile.txt
