@@ -16,21 +16,14 @@ exports.handler = (event, context, callback) => {
         if(!err){
             let alive = false;
             if (resp.Item != null || resp.Item != undefined) {
-                if (resp.Item.TimeToExist < (+new Date())/1000) {
-                    console.log(resp.Item.TimeToExist);
-                    console.log((+new Date())/1000);
-                    alive = true;
-                }
+                alive = true;
+                // if (resp.Item.TimeToExist < (+new Date())/1000) {
+                //     console.log(resp.Item.TimeToExist);
+                //     console.log((+new Date())/1000);
+                //     alive = true;
+                // }
             } 
-            // else {
-            //     if (resp.Item.ttl > new Date().getTime()) {
-            //         alive = true;
-            //     }
-            // }
             console.log("alive:", alive);
-            let currentTime = (+new Date())/1000;
-            let ttl = 5 * 60 * 1000;
-            console.log(currentTime, " : ", ttl);
             if(!alive){
                 let currentTime = (+new Date())/1000;
                 let ttl = 5 * 60;
@@ -67,7 +60,7 @@ exports.handler = (event, context, callback) => {
             })
             }
         } else {
-            console.log("GET Request Failed");
+            console.info("Error in fetching " + JSON.stringify(searchParams) + " from Dynammo");
         }
     })
   return context.logStreamName
