@@ -28,6 +28,9 @@ exports.handler = (event, context, callback) => {
             //     }
             // }
             console.log("alive:", alive);
+            let currentTime = +new Date();
+            let ttl = 5 * 60 * 1000;
+            console.log(currentTime, " : ", ttl);
             if(!alive){
                 let currentTime = +new Date();
                 let ttl = 5 * 60 * 1000;
