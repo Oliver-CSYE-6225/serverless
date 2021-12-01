@@ -28,7 +28,7 @@ exports.handler = (event, context, callback) => {
             //     }
             // }
             console.log("alive:", alive);
-            if(alive){
+            if(!alive){
                 let currentTime = +new Date();
                 let ttl = 5 * 60 * 1000;
                 let expiry = currentTime + ttl;
