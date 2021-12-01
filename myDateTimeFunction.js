@@ -31,6 +31,7 @@ exports.handler = (event, context, callback) => {
             if(!alive){
                 let currentTime = +new Date();
                 let ttl = 5 * 60 * 1000;
+                console.log(currentTime, " : ", ttl);
                 let expiry = currentTime + ttl;
                 let params = {
                     Item: {
