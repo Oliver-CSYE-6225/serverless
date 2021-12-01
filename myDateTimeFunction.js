@@ -14,12 +14,12 @@ exports.handler = (event, context, callback) => {
     };
     dynamodb.get(searchParams, (err, resp) => {
         if(!err){
-            let alive = true;
+            let alive = false;
             if (resp.Item != null || resp.Item != undefined) {
                 if (resp.Item.TimeToExist < +new Date()) {
                     console.log(resp.Item.TimeToExist);
                     console.log(+new Date());
-                    alive = false;
+                    alive = true;
                 }
             } 
             // else {
