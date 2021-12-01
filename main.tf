@@ -188,8 +188,8 @@ resource "aws_iam_policy" "GH-Upload-To-S3" {
           "s3:List*"
         ],
         "Resource" = [
-          var.artifact_s3_arn,
-          format("%s%s", var.artifact_s3_arn, "/*")
+          aws_s3_bucket.lambda_bucket.arn,
+          format("%s%s", aws_s3_bucket.lambda_bucket.arn, "/*")
         ]
       }
     ]
