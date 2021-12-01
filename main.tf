@@ -1,5 +1,5 @@
 
-resource "aws_sns_topic" "verify-user" {
+data "aws_sns_topic" "verify-user" {
   name = "verify-user"
 }
 
@@ -44,7 +44,7 @@ resource "aws_lambda_function" "test-lambda" {
 }
 
 resource "aws_sns_topic_subscription" "sns-lambda-subscription" {
-  topic_arn = aws_sns_topic.verify-user.arn
+  topic_arn = data.aws_sns_topic.verify-user.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.test-lambda.arn
 }
@@ -54,7 +54,7 @@ resource "aws_lambda_permission" "with_sns" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.test-lambda.function_name
   principal     = "sns.amazonaws.com"
-  source_arn    = aws_sns_topic.verify-user.arn
+  source_arn    = data.aws_sns_topic.verify-user.arn
 }
 
 
@@ -64,18 +64,18 @@ resource "aws_iam_policy" "Lambda-SES-Policy" {
 
 
   policy = jsonencode({
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "ses:SendEmail",
-                "ses:SendRawEmail"
-            ],
-            "Resource": "*"
-        }
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "ses:SendEmail",
+          "ses:SendRawEmail"
+        ],
+        "Resource" : "*"
+      }
     ]
-})
+  })
 
 }
 
@@ -83,6 +83,8 @@ resource "aws_iam_role_policy_attachment" "attach-lambda-ses" {
   role       = aws_iam_role.iam_for_lambda.name
   policy_arn = aws_iam_policy.Lambda-SES-Policy.arn
 }
+
+
 
 resource "aws_iam_policy" "Lambda-Artifact-S3" {
   name        = "Lambda-Artifact-S3"
@@ -111,9 +113,37 @@ resource "aws_iam_role_policy_attachment" "attach-lambda-s3" {
   policy_arn = aws_iam_policy.Lambda-Artifact-S3.arn
 }
 
-// data "aws_iam_role" "s3_access" {
-//   name = "EC2-CSYE6225"
-// }
+
+data "aws_iam_policy" "lambda-dynamo" {
+  name = "Web-App-Dynamo"
+}
+
+resource "aws_iam_role_policy_attachment" "attach-lambda-dynamo" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = data.aws_iam_policy.lambda-dynamo.arn
+}
+
+
+data "aws_iam_role" "s3_access" {
+  name = "EC2-CSYE6225"
+}
+
+
+resource "aws_iam_policy" "EC2-Publish-SNS" {
+  name        = "EC2-Publish-SNS"
+  description = "EC2-Publish-SNS"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    "Version" = "2012-10-17",
+    "Statement" : [{
+          "Effect" : "Allow",
+          "Action" : "sns:Publish",
+          "Resource" : data.aws_sns_topic.verify-user.arn
+        }]    
+  })
+}
 
 // resource "aws_iam_role" "lambda_service_role" {
 //   name = "lambda-service-role"
@@ -178,9 +208,9 @@ resource "aws_iam_policy" "GH-Lambda" {
       {
         "Effect" = "Allow",
         "Action" = [
-                "lambda:UpdateFunctionCode",
-                "lambda:UpdateFunctionConfiguration",
-                "lambda:PublishVersion"
+          "lambda:UpdateFunctionCode",
+          "lambda:UpdateFunctionConfiguration",
+          "lambda:PublishVersion"
         ],
         "Resource" = "arn:aws:lambda:us-east-1:546679085257:function:myDateTimeFunction"
       }
@@ -188,11 +218,46 @@ resource "aws_iam_policy" "GH-Lambda" {
   })
 }
 
+resource "aws_iam_policy" "Lambda-Cloudwatch" {
+  name        = "Lambda-Cloudwatch"
+  description = "Lambda-Cloudwatch"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": "logs:CreateLogGroup",
+            "Resource": "*"
+        },
+
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "*"
+        }
+    ]
+})
+}
+
+
+resource "aws_iam_role_policy_attachment" "attach-Lambda-Cloudwatch" {
+  role       = aws_iam_role.iam_for_lambda.name
+  policy_arn = aws_iam_policy.Lambda-Cloudwatch.arn
+}
+
+
 resource "aws_iam_policy_attachment" "attach-GH-lambda" {
   name       = "test-attachment"
   users      = ["ghactions-serverless"]
   policy_arn = aws_iam_policy.GH-Lambda.arn
 }
+
 
 
 resource "aws_iam_policy" "GH-Code-Deploy" {
