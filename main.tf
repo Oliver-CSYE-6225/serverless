@@ -24,10 +24,10 @@ EOF
 }
 
 resource "aws_lambda_function" "test-lambda" {
-  filename      = "myDateTimeFunction.zip"
-  function_name = "myDateTimeFunction"
+  filename      = "userVerification.zip"
+  function_name = "userVerification"
   role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "myDateTimeFunction.handler"
+  handler       = "userVerification.handler"
 
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
@@ -209,10 +209,9 @@ resource "aws_iam_policy" "GH-Lambda" {
         "Effect" = "Allow",
         "Action" = [
           "lambda:UpdateFunctionCode",
-          "lambda:UpdateFunctionConfiguration",
-          "lambda:PublishVersion"
+          "lambda:UpdateFunctionConfiguration"
         ],
-        "Resource" = "arn:aws:lambda:us-east-1:546679085257:function:myDateTimeFunction"
+        "Resource" = "arn:aws:lambda:us-east-1:546679085257:function:userVerification"
       }
     ]
   })
