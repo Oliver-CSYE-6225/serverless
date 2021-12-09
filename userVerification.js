@@ -14,16 +14,16 @@ exports.handler = (event, context, callback) => {
     };
     dynamodb.get(searchParams, (err, resp) => {
         if(!err){
-            let alive = false;
+            let active = false;
             if (resp.Item != null || resp.Item != undefined) {
                 if (resp.Item.TimeToExist < (+new Date())/1000) {
                     console.log(resp.Item.TimeToExist);
                     console.log((+new Date())/1000);
-                    alive = true;
+                    active = true;
                 }
             } 
-            console.log("alive:", alive);
-            if(!alive){
+            console.log("active:", active);
+            if(!active){
                 let currentTime = Math.round((+new Date())/1000);
                 let ttl = 5 * 60;
                 console.log(currentTime, " : ", ttl);
